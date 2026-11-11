@@ -59,6 +59,22 @@ class TestTasks(unittest.TestCase):
         pendientes_vacio = pendientes(tareas, categoria="inexistente")
         self.assertEqual(pendientes_vacio, [])
 
+    def test_pendientes_tarea_sin_clave_categoria(self):
+        tareas = [
+            {"id": 1, "titulo": "Tarea sin clave categoria", "completada": False},
+            {"id": 2, "titulo": "Tarea con categoria", "categoria": "trabajo", "completada": False},
+        ]
+        # Sin filtro: debe incluirla
+        resultado_sin_filtro = pendientes(tareas)
+        self.assertEqual(len(resultado_sin_filtro), 2)
+        self.assertIn(tareas[0], resultado_sin_filtro)
+
+        # Con filtro por categoría específica: debe excluirla sin lanzar ningún error
+        resultado_con_filtro = pendientes(tareas, categoria="trabajo")
+        self.assertEqual(len(resultado_con_filtro), 1)
+        self.assertEqual(resultado_con_filtro[0]["id"], 2)
+        self.assertNotIn(tareas[0], resultado_con_filtro)
+
 
 if __name__ == "__main__":
     unittest.main()
